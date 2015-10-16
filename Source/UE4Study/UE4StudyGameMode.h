@@ -14,6 +14,7 @@ class UE4STUDY_API AUE4StudyGameMode : public AGameMode
 	GENERATED_BODY()
 	
 	
-	
+public:
+	AUE4StudyGameMode();
 	
 };

@@ -27,7 +27,10 @@ APawnWithCamera::APawnWithCamera()
 void APawnWithCamera::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	//Show mouse cursor
+	APlayerController* MyController = GetWorld()->GetFirstPlayerController();
+	MyController->bShowMouseCursor = true;
 }
 
 // Called every frame
