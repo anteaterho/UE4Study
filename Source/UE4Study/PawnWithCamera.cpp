@@ -2,6 +2,8 @@
 
 #include "UE4Study.h"
 #include "PawnWithCamera.h"
+#include "DrawDebugHelpers.h"
+#include "RayTraceHud.h"
 
 
 // Sets default values
@@ -19,6 +21,9 @@ APawnWithCamera::APawnWithCamera()
 	OurCameraSpringArm->CameraLagSpeed = 3.0f;
 	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
 	OurCamera->AttachTo(OurCameraSpringArm, USpringArmComponent::SocketName);
+
+	DistanceWithTwoPoints = 0.5f;
+	bShowLog = false;
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -74,6 +79,16 @@ void APawnWithCamera::Tick( float DeltaTime )
 			SetActorLocation(NewLocation);
 		}
 	}
+
+	//Get Key Input
+	if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustPressed(EKeys::X))
+	{
+		bShowLog = true;
+	}
+	else if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustReleased(EKeys::X))
+	{
+		bShowLog = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -83,6 +98,7 @@ void APawnWithCamera::SetupPlayerInputComponent(class UInputComponent* InputComp
 
 	InputComponent->BindAction("ZoomIn", IE_Pressed, this, &APawnWithCamera::ZoomIn);
 	InputComponent->BindAction("ZoomIn", IE_Released, this, &APawnWithCamera::ZoomOut);
+	InputComponent->BindAction("GetActor", IE_Pressed, this, &APawnWithCamera::GetActor);
 
 	InputComponent->BindAxis("MoveForward", this, &APawnWithCamera::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APawnWithCamera::MoveRight);
@@ -118,5 +134,31 @@ void APawnWithCamera::ZoomIn()
 void APawnWithCamera::ZoomOut()
 {
 	bZoomingIn = false;
+}
+
+bool APawnWithCamera::GetShowLog()
+{
+	return bShowLog;
+}
+
+float APawnWithCamera::GetDistanceWithTwoPoints()
+{
+	return DistanceWithTwoPoints;
+	UE_LOG(LogClass, Warning, TEXT("Distance %f"), DistanceWithTwoPoints);
+}
+
+void APawnWithCamera::GetActor()
+{
+	UE_LOG(LogClass, Warning, TEXT("Pressed Button!!"));
+	//Get RayTraceHud
+	APlayerController* MyController = GetWorld()->GetFirstPlayerController();
+	ARayTraceHud *Hudref = Cast<ARayTraceHud>(MyController->GetHUD());
+	FVector WorldMousePos = Hudref->GetMouseWorldPosition();
+
+	FVector Start = GetActorLocation();
+
+	DistanceWithTwoPoints = FVector::Dist(Start, WorldMousePos);
+
+	DrawDebugLine(GetWorld(), Start, WorldMousePos, FColor(255, 0, 0), true, 0.5f, 0, 5.0f);
 }
 

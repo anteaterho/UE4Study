@@ -23,6 +23,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+	bool GetShowLog();
+
+	float GetDistanceWithTwoPoints();
+
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -40,4 +44,9 @@ protected:
 	void YawCamera(float AxisValue);
 	void ZoomIn();
 	void ZoomOut();
+	void GetActor();
+
+private:
+	bool bShowLog;
+	float DistanceWithTwoPoints;
 };
